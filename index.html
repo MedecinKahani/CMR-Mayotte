@@ -936,10 +936,10 @@ function copyIppSimple(ipp, btn){
 
 var pdsTemplates = {
   Mramadoudou: '<div style="display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:6px;border-bottom:1px dashed var(--border);padding-bottom:5px;margin-bottom:5px;flex:2;min-height:0;">'
-    + occCard({loc:'Chir 1',code:'C1',zoneClass:'zone-green',ipp:'00301',nom:'Nadia Rassili',age:'29 ans',sexe:'♀',dob:'12/03/97',temps:'34min',presc:2,fc:'76',ta:'128/85',spo2:'98',temp:'36.8',hemocue:'--',dextro:'--',motif:'plaie main'})
+    + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Chir 1\',\'zone-green\')">Chir 1</button>'
     + '<div></div><div></div>'
     + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Observation 3\',\'zone-blue\')">Observation 3</button>'
-    + occCard({loc:'Observation 2',code:'O2',zoneClass:'zone-blue',ipp:'00305',nom:'Youssouf Ali',age:'8 ans',sexe:'♂',dob:'17/06/18',temps:'56min',presc:0,fc:'102',ta:'--',spo2:'97',temp:'38.9',hemocue:'--',dextro:'--',motif:'fièvre'})
+    + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Observation 2\',\'zone-blue\')">Observation 2</button>'
     + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Chir 2\',\'zone-green\')">Chir 2</button>'
     + '<div></div>'
     + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Lit bébé\',\'zone-blue\')">Lit bébé</button>'
@@ -948,7 +948,7 @@ var pdsTemplates = {
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:6px;flex:1;min-height:0;">'
     + '<button class="emplacement zone-red" onclick="openPlaceOverlay(this,\'Déchoc 2\',\'zone-red\')">Déchoc 2</button>'
-    + occCard({loc:'Déchoc 1',code:'D1',zoneClass:'zone-red',ipp:'00299',nom:'Fatima Bacar',age:'45 ans',sexe:'♀',dob:'03/09/80',temps:'12min',presc:3,fc:'98',ta:'142/90',spo2:'96',temp:'37.1',hemocue:'12.3',dextro:'1.05',motif:'douleur thoracique'})
+    + '<button class="emplacement zone-red" onclick="openPlaceOverlay(this,\'Déchoc 1\',\'zone-red\')">Déchoc 1</button>'
     + '<button id="rMed" class="emplacement zone-gray" onclick="setRole(\'Médecin\')">Médecin<br><small>Dr Theo</small></button>'
     + '<button id="rIDE" class="emplacement zone-gray" onclick="setRole(\'IDE\')">IDE<br><small>connecté·e</small></button>'
     + '<button id="rAS" class="emplacement zone-gray" onclick="setRole(\'AS\')">Aide-soignant<br><small>connecté·e</small></button>'
@@ -959,9 +959,9 @@ var pdsTemplates = {
     + '<button id="rMed" class="emplacement zone-gray" onclick="setRole(\'Médecin\')">Médecin<br><small>connecté·e</small></button>'
     + '<button id="rAS" class="emplacement zone-gray" onclick="setRole(\'AS\')">Aide-soignant<br><small>connecté·e</small></button>'
     + '<button class="emplacement zone-purple2" onclick="openPlaceOverlay(this,\'Fauteuil obs\',\'zone-purple2\')">Fauteuil obs</button>'
-    + occCard({loc:'Lit 2',code:'L2',zoneClass:'zone-blue',ipp:'00312',nom:'Ali Kassim',age:'5 ans',sexe:'♂',dob:'21/02/21',temps:'20min',presc:1,fc:'118',ta:'--',spo2:'97',temp:'39.1',hemocue:'--',dextro:'--',motif:'fièvre'})
+    + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Lit 2\',\'zone-blue\')">Lit 2</button>'
     + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Fauteuil 1\',\'zone-green\')">Fauteuil 1</button>'
-    + occCard({loc:'Brancard 1',code:'B1',zoneClass:'zone-red',ipp:'00287',nom:'Saïd Ahamada',age:'60 ans',sexe:'♂',dob:'03/07/64',temps:'31min',presc:2,fc:'88',ta:'152/94',spo2:'95',temp:'36.9',hemocue:'10.1',dextro:'--',motif:'douleur thoracique'})
+    + '<button class="emplacement zone-red" onclick="openPlaceOverlay(this,\'Brancard 1\',\'zone-red\')">Brancard 1</button>'
     + '<button class="emplacement zone-purple2" onclick="openPlaceOverlay(this,\'Lit bébé obs\',\'zone-purple2\')">Lit bébé obs</button>'
     + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Fauteuil 2\',\'zone-green\')">Fauteuil 2</button>'
     + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Lit 1\',\'zone-blue\')">Lit 1</button>'
@@ -1929,8 +1929,6 @@ function renderIdeRealises(){
 }
 // IDE — liste d'attente, patient non listé, stats du jour
 var idePatientQueue = [
-  {prenom:'Fatima', nom:'B.', sexe:'♀', age:'45 ans', motif:'pansement à refaire'},
-  {prenom:'Youssouf', nom:'A.', sexe:'♂', age:'8 ans', motif:'injection prescrite'}
 ];
 var ideDailyCount = 0;
 var ideDailyCategoryCounts = {};
@@ -2017,8 +2015,6 @@ function openMedecinQueue(label){
   renderListe();
 }
 var patientQueue = [
-  {name:'Aïcha M.', ipp:'00214', motif:'douleur abdominale', constantes:'37.8°C · 82 bpm', age:'4 ans', medecin:'Médecin orange'},
-  {name:'Ibrahim S.', ipp:'00219', motif:'renouvellement ordonnance', constantes:'36.6°C · 74 bpm', age:'34 ans', medecin:'Médecin bleu'}
 ];
 function renderListe(){
   var box = document.getElementById('listeContent');
@@ -2077,8 +2073,6 @@ function addPatientManually(){
 var currentIpp = '';
 var medecinDailyCount = 0;
 var secQueue = [
-  {nom:'Nadia Rassili', type:'AT', dateDebut:'20/08/2026', dateFin:'23/08/2026', motif:'plaie main'},
-  {nom:'Fatima Bacar', type:'RDV', specialite:'Cardiologie', delai:'2 semaines', motif:'douleur thoracique récidivante'}
 ];
 var secCurrentIndex = null;
 function renderSecListe(){
