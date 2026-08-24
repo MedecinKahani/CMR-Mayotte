@@ -195,20 +195,20 @@ table.stat-table td.num{text-align:right;font-weight:600;font-variant-numeric:ta
         <div class="grid grid-3">
           <div>
             <p class="section-label" style="margin-top:0;text-align:left;">Identité</p>
-            <label class="field">Prénom</label><input type="text" style="margin-bottom:8px;">
-            <label class="field">Nom</label><input type="text" style="margin-bottom:8px;">
-            <label class="field">IPP</label><input type="text" placeholder="ex : 00214" style="margin-bottom:8px;">
+            <label class="field">Prénom</label><input type="text" id="asPrenom" style="margin-bottom:8px;">
+            <label class="field">Nom</label><input type="text" id="asNom" style="margin-bottom:8px;">
+            <label class="field">IPP</label><input type="text" id="asIpp" placeholder="ex : 00214" style="margin-bottom:8px;">
             <label class="field">Date de naissance</label><input type="date" id="dob" oninput="computeAge()" style="margin-bottom:8px;">
             <p style="font-size:13px;margin:0;">Âge calculé : <strong id="ageOut">—</strong></p>
             <input type="checkbox" id="lt6" disabled style="display:none;">
           </div>
           <div>
             <p class="section-label" style="margin-top:0;text-align:left;">Motif</p>
-            <textarea rows="3" style="margin-bottom:12px;"></textarea>
+            <textarea id="asMotif" rows="3" style="margin-bottom:12px;"></textarea>
             <p class="section-label" style="text-align:left;">Constantes</p>
             <div class="grid grid-2" style="margin-bottom:12px;">
-              <input placeholder="TA (mmHg)"><input placeholder="FC (bpm)">
-              <input placeholder="SpO2 (%)"><input placeholder="T° (°C)">
+              <input id="asTa" placeholder="TA (mmHg)"><input id="asFc" placeholder="FC (bpm)">
+              <input id="asSpo2" placeholder="SpO2 (%)"><input id="asTemp" placeholder="T° (°C)">
             </div>
             <p class="section-label" style="text-align:left;">Tests rapides effectués</p>
             <div id="asTestsRapides" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
@@ -661,7 +661,7 @@ function openSatellite(name){
     + '<div class="grid grid-3">'
     + '<button class="poste-btn poste-purple" onclick="showScreen(\'as\')">Aide-soignant</button>'
     + '<button class="poste-btn poste-green" onclick="showScreen(\'ide-liste\')">IDE</button>'
-    + '<button class="poste-btn poste-skyblue" onclick="showScreen(\'liste\')">Médecin</button>'
+    + '<button class="poste-btn poste-skyblue" onclick="openGenericMedecinQueue()">Médecin</button>'
     + '</div>'
     + '<p class="small-note" style="margin-top:14px;">Pas de permanence des soins sur les sites délocalisés.</p>';
   showScreen('postes');
@@ -702,14 +702,14 @@ var posteTemplates = {
     + '<div></div>'
     + '</div>',
   Kahani: '<div style="display:flex;justify-content:center;margin-bottom:14px;">'
-    + '<button class="poste-btn poste-coral" style="width:150px;" onclick="showScreen(\'liste\')">MAO</button>'
+    + '<button class="poste-btn poste-coral" style="width:150px;" onclick="openGenericMedecinQueue()">MAO</button>'
     + '</div>'
     + '<div style="border:1px dashed var(--border);border-radius:9px;padding:12px;margin-bottom:12px;">'
     + '<p style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-muted);margin:0 0 8px;text-align:center;">Bâtiment principal</p>'
     + '<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">'
     + '<button class="poste-btn poste-tan" style="width:150px;" onclick="showScreen(\'secretaire\')">Secrétaire</button>'
-    + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="showScreen(\'liste\')">Médecin 1</button>'
-    + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="showScreen(\'liste\')">Médecin 2</button>'
+    + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="openGenericMedecinQueue()">Médecin 1</button>'
+    + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="openGenericMedecinQueue()">Médecin 2</button>'
     + '<button class="poste-btn poste-green" style="width:150px;" onclick="showScreen(\'ide-liste\')">Pansement</button>'
     + '<button class="poste-btn poste-purple" style="width:150px;" onclick="showScreen(\'as\')">Aide-soignant</button>'
     + '</div></div>'
@@ -720,7 +720,7 @@ var posteTemplates = {
     + '<button class="poste-btn poste-green" style="width:150px;" onclick="showScreen(\'ide-liste\')">Prélèvement</button>'
     + '<div style="display:flex;gap:10px;">'
     + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="placeholderPoste(\'IPA\')">IPA</button>'
-    + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="showScreen(\'liste\')">Médecin chronique</button>'
+    + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="openGenericMedecinQueue()">Médecin chronique</button>'
     + '</div></div></div>'
     + '<div style="border:1px dashed var(--border);border-radius:9px;padding:12px;flex:1;min-width:230px;">'
     + '<p style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-muted);margin:0 0 8px;text-align:center;">Permanence des soins</p>'
@@ -744,9 +744,9 @@ posteTemplates['Dzoumogné'] = '<div style="display:flex;justify-content:flex-en
   + '<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">'
   + '<button class="poste-btn poste-tan" style="width:150px;" onclick="showScreen(\'secretaire\')">Secrétaire</button>'
   + '<button class="poste-btn poste-green" style="width:150px;" onclick="showScreen(\'ide-liste\')">IDE</button>'
-  + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="showScreen(\'liste\')">Médecin 1</button>'
-  + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="showScreen(\'liste\')">Médecin 2</button>'
-  + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="showScreen(\'liste\')">Médecin 3</button>'
+  + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="openGenericMedecinQueue()">Médecin 1</button>'
+  + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="openGenericMedecinQueue()">Médecin 2</button>'
+  + '<button class="poste-btn poste-skyblue" style="width:150px;" onclick="openGenericMedecinQueue()">Médecin 3</button>'
   + '<button class="poste-btn poste-purple" style="width:150px;" onclick="showScreen(\'as\')">Aide-soignant</button>'
   + '</div>';
 posteTemplates['Jacaranda'] = '<div class="grid" style="grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:8px;">'
@@ -765,7 +765,7 @@ posteTemplates['Jacaranda'] = '<div class="grid" style="grid-template-columns:re
   + '<button class="poste-btn poste-skyblue" style="height:50px;" onclick="goToPds(\'Médecin\')">Médecin</button>'
   + '</div>'
   + '</div>'
-  + '<button class="poste-btn poste-skyblue" style="height:110px;grid-column:2;align-self:start;" onclick="showScreen(\'liste\')">Salle n°9</button>'
+  + '<button class="poste-btn poste-skyblue" style="height:110px;grid-column:2;align-self:start;" onclick="openGenericMedecinQueue()">Salle n°9</button>'
   + '<button class="poste-btn poste-purple" style="height:110px;grid-column:3;align-self:start;" onclick="showScreen(\'as\')">Bureau AS</button>'
   + '<button class="poste-btn poste-tan" style="height:110px;grid-column:4;align-self:start;" onclick="showScreen(\'secretaire\')">Secrétaire</button>'
   + '</div>';
@@ -1570,6 +1570,24 @@ function envoyerPatient(containerId){
   Array.from(box.children).forEach(function(b){ if(b.style.outline) selected = b.textContent; });
   if(!selected){ alert('Sélectionnez une destination avant d\'envoyer le patient.'); return; }
   if(containerId==='asDestButtons'){
+    var prenom = document.getElementById('asPrenom').value.trim();
+    var nom = document.getElementById('asNom').value.trim();
+    if(!prenom || !nom){ alert('Merci de renseigner au moins le prénom et le nom du patient.'); return; }
+    var ipp = document.getElementById('asIpp').value.trim();
+    var motif = document.getElementById('asMotif').value.trim();
+    var age = document.getElementById('ageOut').textContent;
+    var ta = document.getElementById('asTa').value.trim();
+    var fc = document.getElementById('asFc').value.trim();
+
+    patientQueue.push({
+      name: prenom+' '+nom,
+      ipp: ipp || '—',
+      motif: motif || '—',
+      constantes: (ta?ta+' mmHg':'')+(ta&&fc?' · ':'')+(fc?fc+' bpm':'') || '—',
+      age: age!=='—' ? age : '',
+      medecin: selected
+    });
+
     asDailyCount++;
     incrementActe('Tensiomètre');
     var testsBox = document.getElementById('asTestsRapides');
@@ -1588,6 +1606,26 @@ function envoyerPatient(containerId){
     document.getElementById('asDailyCountLabel').textContent = asDailyCount;
     document.getElementById('asDailyTestsLabel').textContent = asDailyTests;
     document.getElementById('asDailyEducLabel').textContent = asDailyEduc;
+
+    alert('Patient envoyé vers : '+selected);
+
+    // Réinitialisation complète du formulaire pour le patient suivant
+    document.getElementById('asPrenom').value = '';
+    document.getElementById('asNom').value = '';
+    document.getElementById('asIpp').value = '';
+    document.getElementById('asMotif').value = '';
+    document.getElementById('asTa').value = '';
+    document.getElementById('asFc').value = '';
+    document.getElementById('asSpo2').value = '';
+    document.getElementById('asTemp').value = '';
+    document.getElementById('dob').value = '';
+    document.getElementById('ageOut').textContent = '—';
+    document.getElementById('rdvCheckAs').checked = false;
+    document.getElementById('rdvTimeBoxAs').style.display = 'none';
+    Array.from(box.children).forEach(function(b){ b.style.outline = ''; });
+    if(testsBox) Array.from(testsBox.children).forEach(function(wrap){ var btn = wrap.querySelector('button'); if(btn) btn.style.outline=''; var rb = wrap.querySelector('div'); if(rb) rb.style.display='none'; });
+    if(educBox) Array.from(educBox.children).forEach(function(btn){ btn.style.outline=''; });
+    return;
   }
   alert('Patient envoyé vers : '+selected);
 }
@@ -2009,6 +2047,11 @@ var destinations=['Domicile','Secrétaire','IDE SNP','PDS','Ass. sociale','Déc�
 
 // file d'attente médecin
 var currentMedecinFilter = null;
+function openGenericMedecinQueue(){
+  currentMedecinFilter = null;
+  showScreen('liste');
+  renderListe();
+}
 function openMedecinQueue(label){
   currentMedecinFilter = label;
   showScreen('liste');
