@@ -1053,10 +1053,44 @@ function renderPdsQueue(){
   }
   pdsWaitingQueue.forEach(function(p, i){
     var d = document.createElement('div');
-    d.style.cssText = 'border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;min-width:150px;';
+    d.style.cssText = 'border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;min-width:150px;cursor:pointer;';
     d.innerHTML = '<strong>'+p.nom+'</strong><br><span style="color:var(--ink-muted);">'+p.motif+'</span>';
+    d.onclick = function(){ openQueuePatientPlaceOverlay(i); };
     box.appendChild(d);
   });
+}
+function openQueuePatientPlaceOverlay(i){
+  var p = pdsWaitingQueue[i];
+  var board = document.getElementById('pdsEmplacements');
+  var freeBtns = board ? Array.from(board.querySelectorAll('button.emplacement')).filter(function(b){
+    return !b.classList.contains('occ') && !b.id;
+  }) : [];
+  var content = document.getElementById('prelOverlayContent');
+  var html = '<p style="font-size:13px;color:var(--ink-muted);margin:0 0 10px;">Placer <strong>'+p.nom+'</strong> — '+p.motif+'</p>';
+  if(freeBtns.length===0){
+    html += '<p class="small-note" style="margin:0;">Aucun emplacement libre disponible pour le moment.</p>';
+  } else {
+    html += '<div style="display:flex;flex-direction:column;gap:6px;">';
+    freeBtns.forEach(function(b, bi){
+      html += '<button onclick="placeQueuePatientOn('+i+','+bi+')" style="text-align:left;">'+b.textContent.trim()+'</button>';
+    });
+    html += '</div>';
+  }
+  window._freeBtnsForQueuePlace = freeBtns;
+  content.innerHTML = html;
+  document.getElementById('prelOverlay').style.display = 'flex';
+}
+function placeQueuePatientOn(queueIndex, btnIndex){
+  var p = pdsWaitingQueue[queueIndex];
+  var target = window._freeBtnsForQueuePlace[btnIndex];
+  var loc = target.textContent.trim();
+  var zoneClass = Array.from(target.classList).find(function(c){ return c.indexOf('zone-')===0; });
+  target.className = 'emplacement btn '+zoneClass+' occ';
+  target.innerHTML = loc+'<br><strong style="font-size:12px;">'+p.nom+'</strong><br><small style="font-size:10.5px;">'+p.motif+'</small>';
+  target.onclick = function(){ openPds(loc, p.nom, p.motif, target, zoneClass); };
+  pdsWaitingQueue.splice(queueIndex, 1);
+  renderPdsQueue();
+  closePrelOverlay();
 }
 function openPlaceOverlay(btn, loc, zoneClass){
   window._placeTargetBtn = btn;
