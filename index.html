@@ -1085,9 +1085,7 @@ function placeQueuePatientOn(queueIndex, btnIndex){
   var target = window._freeBtnsForQueuePlace[btnIndex];
   var loc = target.textContent.trim();
   var zoneClass = Array.from(target.classList).find(function(c){ return c.indexOf('zone-')===0; });
-  target.className = 'emplacement btn '+zoneClass+' occ';
-  target.innerHTML = loc+'<br><strong style="font-size:12px;">'+p.nom+'</strong><br><small style="font-size:10.5px;">'+p.motif+'</small>';
-  target.onclick = function(){ openPds(loc, p.nom, p.motif, target, zoneClass); };
+  placerCarteRiche(target, {loc:loc, zoneClass:zoneClass, nom:p.nom, motif:p.motif});
   pdsWaitingQueue.splice(queueIndex, 1);
   renderPdsQueue();
   closePrelOverlay();
@@ -1115,11 +1113,26 @@ function openPlaceOverlay(btn, loc, zoneClass){
   content.innerHTML = html;
   document.getElementById('prelOverlay').style.display = 'flex';
 }
+function placerCarteRiche(target, data){
+  var code = (data.loc.match(/\d+/) ? data.loc.replace(/[^A-Za-zÀ-ÿ]/g,'').slice(0,1).toUpperCase()+data.loc.match(/\d+/)[0] : data.loc.slice(0,2).toUpperCase());
+  var html = occCard({
+    loc: data.loc, code: code, zoneClass: data.zoneClass,
+    ipp: data.ipp || '—', nom: data.nom,
+    age: data.age || '', sexe: data.sexe || '', dob: data.dob || '',
+    temps: 'à l\'instant', presc: 0,
+    fc: data.fc || '--', ta: data.ta || '--', spo2: data.spo2 || '--', temp: data.temp || '--',
+    hemocue: '--', dextro: '--',
+    motif: data.motif || '—'
+  });
+  var wrapper = document.createElement('div');
+  wrapper.innerHTML = html;
+  var newEl = wrapper.firstElementChild;
+  target.replaceWith(newEl);
+  return newEl;
+}
 function markEmplacementOccupied(nom, motif){
   var btn = window._placeTargetBtn, loc = window._placeLoc, zoneClass = window._placeZone;
-  btn.className = 'emplacement '+zoneClass+' occ';
-  btn.innerHTML = loc+'<br><strong style="font-size:12px;">'+nom+'</strong><br><small style="font-size:10.5px;">'+motif+'</small>';
-  btn.onclick = function(){ alert(nom+' — '+motif+' ('+loc+')'); };
+  placerCarteRiche(btn, {loc:loc, zoneClass:zoneClass, nom:nom, motif:motif});
   closePrelOverlay();
 }
 function placePatientFromQueue(i){
@@ -1242,9 +1255,7 @@ function cancelDischarge(idx){
     var candidates = board ? Array.from(board.querySelectorAll('.emplacement')) : [];
     var target = candidates.find(function(b){ return b.textContent.trim().indexOf(p.loc)===0 && !b.classList.contains('occ'); });
     if(target){
-      target.className = 'emplacement btn '+p.zoneClass+' occ';
-      target.innerHTML = p.loc+'<br><strong style="font-size:12px;">'+p.nom+'</strong><br><small style="font-size:10.5px;">'+p.motif+'</small>';
-      target.onclick = function(){ openPds(p.loc, p.nom, p.motif, target, p.zoneClass); };
+      placerCarteRiche(target, {loc:p.loc, zoneClass:p.zoneClass, nom:p.nom, motif:p.motif});
       renderPdsQueue();
       closePrelOverlay();
       alert('Sortie annulée — '+p.nom+' est de retour sur '+p.loc+'.');
@@ -1679,9 +1690,14 @@ function envoyerPatient(containerId){
       });
       if(target){
         var zoneClass = Array.from(target.classList).find(function(c){ return c.indexOf('zone-')===0; });
-        target.className = 'emplacement btn '+zoneClass+' occ';
-        target.innerHTML = selected+'<br><strong style="font-size:12px;">'+pFullName+'</strong><br><small style="font-size:10.5px;">'+(pMotif||'—')+'</small>';
-        target.onclick = function(){ openPds(selected, pFullName, pMotif||'—', target, zoneClass); };
+        placerCarteRiche(target, {
+          loc: selected, zoneClass: zoneClass, nom: pFullName, motif: pMotif||'—',
+          fc: document.getElementById('pdsFc').value.trim(),
+          spo2: document.getElementById('pdsSpo2').value.trim(),
+          temp: document.getElementById('pdsTemp').value.trim(),
+          ta: (document.getElementById('pdsPas').value.trim() && document.getElementById('pdsPad').value.trim())
+                ? document.getElementById('pdsPas').value.trim()+'/'+document.getElementById('pdsPad').value.trim() : ''
+        });
         placedDirectly = true;
       }
     }
@@ -3126,11 +3142,9 @@ function confirmChangeLocation(i){
   oldBtn.innerHTML = oldLoc;
   oldBtn.onclick = function(){ openPlaceOverlay(oldBtn, oldLoc, oldZone); };
 
-  // occupe le nouvel emplacement avec les mêmes infos simplifiées
-  newBtn.className = 'emplacement btn '+newZone+' occ';
+  // occupe le nouvel emplacement avec la carte complète
   var motif = document.getElementById('pMotifTag').textContent;
-  newBtn.innerHTML = newLoc+'<br><strong style="font-size:12px;">'+currentPatientName+'</strong><br><small style="font-size:10.5px;">'+motif+'</small>';
-  newBtn.onclick = function(){ openPds(newLoc, currentPatientName, motif, newBtn, newZone); };
+  newBtn = placerCarteRiche(newBtn, {loc:newLoc, zoneClass:newZone, nom:currentPatientName, motif:motif, ipp:currentIpp});
 
   window._currentPdsCardBtn = newBtn;
   window._currentPdsZoneClass = newZone;
