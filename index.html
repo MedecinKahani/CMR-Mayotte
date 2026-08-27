@@ -235,9 +235,9 @@ table.stat-table td.num{text-align:right;font-weight:600;font-variant-numeric:ta
         <div class="grid grid-3">
           <div>
             <p class="section-label" style="margin-top:0;text-align:left;">Identité</p>
-            <label class="field">Prénom</label><input type="text" style="margin-bottom:8px;">
-            <label class="field">Nom</label><input type="text" style="margin-bottom:8px;">
-            <label class="field">IPP</label><input type="text" placeholder="ex : 00214" style="margin-bottom:8px;">
+            <label class="field">Prénom</label><input type="text" id="pdsPrenom" style="margin-bottom:8px;">
+            <label class="field">Nom</label><input type="text" id="pdsNom" style="margin-bottom:8px;">
+            <label class="field">IPP</label><input type="text" id="pdsIpp" placeholder="ex : 00214" style="margin-bottom:8px;">
             <label class="field">Date de naissance</label><input type="date" id="dobPds" oninput="computeAgePds()" style="margin-bottom:8px;">
             <p style="font-size:13px;margin:0 0 8px;">Âge calculé : <strong id="ageOutPds">—</strong></p>
             <label class="field">Sexe</label>
@@ -1625,6 +1625,46 @@ function envoyerPatient(containerId){
     Array.from(box.children).forEach(function(b){ b.style.outline = ''; });
     if(testsBox) Array.from(testsBox.children).forEach(function(wrap){ var btn = wrap.querySelector('button'); if(btn) btn.style.outline=''; var rb = wrap.querySelector('div'); if(rb) rb.style.display='none'; });
     if(educBox) Array.from(educBox.children).forEach(function(btn){ btn.style.outline=''; });
+    return;
+  }
+  if(containerId==='pdsAsDestButtons'){
+    var pPrenom = document.getElementById('pdsPrenom').value.trim();
+    var pNom = document.getElementById('pdsNom').value.trim();
+    if(!pPrenom || !pNom){ alert('Merci de renseigner au moins le prénom et le nom du patient.'); return; }
+    var pIpp = document.getElementById('pdsIpp').value.trim();
+    var pMotif = pdsMotifState.motif==='Autre' ? document.getElementById('motifAutrePds').value.trim() : (pdsMotifState.motif || '—');
+
+    pdsWaitingQueue.push({nom: pPrenom+' '+pNom, motif: pMotif || '—'});
+    renderPdsQueue();
+
+    alert('Patient envoyé vers : '+selected);
+
+    // Réinitialisation complète du formulaire de triage pour le patient suivant
+    document.getElementById('pdsPrenom').value = '';
+    document.getElementById('pdsNom').value = '';
+    document.getElementById('pdsIpp').value = '';
+    document.getElementById('dobPds').value = '';
+    document.getElementById('ageOutPds').textContent = '—';
+    pdsSexe = null;
+    document.getElementById('sexeHBtn').style.outline = '';
+    document.getElementById('sexeFBtn').style.outline = '';
+    ['pdsPoids','pdsFc','pdsSpo2','pdsPas','pdsPad','pdsTemp'].forEach(function(id){
+      var el = document.getElementById(id);
+      el.value = ''; el.style.background=''; el.style.borderColor=''; el.style.color='';
+    });
+    document.getElementById('pdsPamOut').textContent = '—';
+    document.getElementById('motifAutrePds').value = '';
+    document.getElementById('motifAutrePds').style.display = 'none';
+    pdsMotifState.motif = null;
+    pdsMotifState.answers = {};
+    window._orientationManuallySet = false;
+    window._pdsEducationDone = false;
+    window._pdsCountedTests = {};
+    window._pdsTdrResults = null;
+    renderPdsMotifCards();
+    renderPdsFollowup();
+    renderAsPdsGuidance();
+    Array.from(box.children).forEach(function(b){ b.style.outline=''; b.style.background=''; });
     return;
   }
   alert('Patient envoyé vers : '+selected);
