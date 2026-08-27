@@ -826,7 +826,7 @@ function occCard(p){
   var badgeText = p.presc > 0 ? p.presc : '–';
   var hasIpp = !!p.ipp;
   var hasVitals = p.fc!==null && p.fc!==undefined;
-  return '<div class="emplacement btn '+p.zoneClass+' occ" style="position:relative;cursor:pointer;" onclick="openPds(\''+p.loc+'\',\''+p.nom+'\',\''+p.age+' · '+p.motif+'\',this,\''+p.zoneClass+'\')">'
+  return '<div class="emplacement btn '+p.zoneClass+' occ" style="position:relative;cursor:pointer;" onclick="openPds(\''+p.loc+'\',\''+p.nom+'\',\''+p.age+' · '+p.motif+'\',this,\''+p.zoneClass+'\',\''+(p.ipp||'')+'\',\''+(p.age||'')+'\',\''+(p.sexe||'')+'\',\''+(p.dob||'')+'\')">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;width:100%;">'
     + '<div style="display:flex;align-items:center;gap:4px;">'
     + '<span style="font-size:15px;font-weight:800;">'+p.code+'</span>'
@@ -3157,15 +3157,16 @@ function confirmChangeLocation(i){
   document.getElementById('pLoc').textContent = '📍 '+newLoc;
   closePrelOverlay();
 }
-function openPds(loc,name,info,btnEl,zoneClass){
+function openPds(loc,name,info,btnEl,zoneClass,ipp,age,sexe,dob){
   window._currentPdsCardBtn = btnEl || null;
   window._currentPdsZoneClass = zoneClass || null;
   window._currentPdsLoc = loc;
   currentPatientName = name;
+  currentIpp = ipp || '';
   document.getElementById('pNomPrenom').textContent = name;
-  document.getElementById('pSexeAge').textContent = '♀ · 25 ans';
-  document.getElementById('pDob').textContent = '13/12/2000';
-  document.getElementById('pIppVal').textContent = currentIpp || '2606001298';
+  document.getElementById('pSexeAge').textContent = (sexe||age) ? ((sexe||'')+((sexe&&age)?' · ':'')+(age||'')) : 'Âge / sexe non renseignés';
+  document.getElementById('pDob').textContent = dob || '—';
+  document.getElementById('pIppVal').textContent = currentIpp || '—';
   document.getElementById('pMotifTag').textContent = info.split('·').pop().trim() || info;
   document.getElementById('pLoc').textContent = '📍 '+loc;
   renderPdsVitals();
