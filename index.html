@@ -1634,10 +1634,29 @@ function envoyerPatient(containerId){
     var pIpp = document.getElementById('pdsIpp').value.trim();
     var pMotif = pdsMotifState.motif==='Autre' ? document.getElementById('motifAutrePds').value.trim() : (pdsMotifState.motif || '—');
 
-    pdsWaitingQueue.push({nom: pPrenom+' '+pNom, motif: pMotif || '—'});
-    renderPdsQueue();
+    var pFullName = pPrenom+' '+pNom;
 
-    alert('Patient envoyé vers : '+selected);
+    // Tentative de placement direct sur l'emplacement présélectionné (ex. "Brancard 1", "Box 1"...)
+    var placedDirectly = false;
+    var board = document.getElementById('pdsEmplacements');
+    if(board && selected.toLowerCase().indexOf('salle d\'attente')===-1){
+      var target = Array.from(board.querySelectorAll('.emplacement')).find(function(b){
+        return !b.classList.contains('occ') && b.textContent.trim().indexOf(selected)===0;
+      });
+      if(target){
+        var zoneClass = Array.from(target.classList).find(function(c){ return c.indexOf('zone-')===0; });
+        target.className = 'emplacement btn '+zoneClass+' occ';
+        target.innerHTML = selected+'<br><strong style="font-size:12px;">'+pFullName+'</strong><br><small style="font-size:10.5px;">'+(pMotif||'—')+'</small>';
+        target.onclick = function(){ openPds(selected, pFullName, pMotif||'—', target, zoneClass); };
+        placedDirectly = true;
+      }
+    }
+    if(!placedDirectly){
+      pdsWaitingQueue.push({nom: pFullName, motif: pMotif || '—'});
+      renderPdsQueue();
+    }
+
+    alert(placedDirectly ? 'Patient placé directement sur : '+selected : 'Emplacement "'+selected+'" indisponible ou hors plateau affiché — patient ajouté en file d\'attente.');
 
     // Réinitialisation complète du formulaire de triage pour le patient suivant
     document.getElementById('pdsPrenom').value = '';
