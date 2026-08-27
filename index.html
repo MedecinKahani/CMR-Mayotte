@@ -824,12 +824,14 @@ function formatMotif(m){
 function occCard(p){
   var badgeColor = p.presc > 0 ? 'var(--primary-dark)' : '#B9B6AC';
   var badgeText = p.presc > 0 ? p.presc : '–';
+  var hasIpp = !!p.ipp;
+  var hasVitals = p.fc!==null && p.fc!==undefined;
   return '<div class="emplacement btn '+p.zoneClass+' occ" style="position:relative;cursor:pointer;" onclick="openPds(\''+p.loc+'\',\''+p.nom+'\',\''+p.age+' · '+p.motif+'\',this,\''+p.zoneClass+'\')">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;width:100%;">'
     + '<div style="display:flex;align-items:center;gap:4px;">'
     + '<span style="font-size:15px;font-weight:800;">'+p.code+'</span>'
-    + '<span style="font-size:8px;border:1px solid currentColor;border-radius:5px;padding:1px 4px;white-space:nowrap;">IPP '+p.ipp+'</span>'
-    + '<button onclick="event.stopPropagation();copyIppSimple(\''+p.ipp+'\',this)" style="font-size:7.5px;padding:1px 4px;height:auto;line-height:1.3;">Copier</button>'
+    + (hasIpp ? '<span style="font-size:8px;border:1px solid currentColor;border-radius:5px;padding:1px 4px;white-space:nowrap;">IPP '+p.ipp+'</span>'
+        + '<button onclick="event.stopPropagation();copyIppSimple(\''+p.ipp+'\',this)" style="font-size:7.5px;padding:1px 4px;height:auto;line-height:1.3;">Copier</button>' : '')
     + '</div>'
     + '<span style="font-size:14px;font-weight:800;text-align:right;">'+p.nom+'</span>'
     + '</div>'
@@ -838,14 +840,15 @@ function occCard(p){
     + '<span style="font-size:8.5px;opacity:0.6;">'+p.temps+'</span>'
     + '</div>'
     + '<div style="display:flex;gap:6px;width:100%;flex:1;">'
-    + '<div style="flex:0 0 50%;display:grid;grid-template-columns:1fr 1fr;gap:4px;">'
-    + vitalCell('❤️', p.fc, 'bpm')
-    + vitalCell('🩸', p.ta, '')
-    + vitalCell('💧', p.spo2, '%')
-    + vitalCell('🌡️', p.temp, '°C')
-    + vitalCell('🩸', p.hemocue, 'g/dL')
-    + vitalCell('🔴', p.dextro, 'g/dL')
-    + '</div>'
+    + (hasVitals ? '<div style="flex:0 0 50%;display:grid;grid-template-columns:1fr 1fr;gap:4px;">'
+        + vitalCell('❤️', p.fc, 'bpm')
+        + vitalCell('🩸', p.ta, '')
+        + vitalCell('💧', p.spo2, '%')
+        + vitalCell('🌡️', p.temp, '°C')
+        + vitalCell('🩸', p.hemocue, 'g/dL')
+        + vitalCell('🔴', p.dextro, 'g/dL')
+        + '</div>'
+      : '<div style="flex:0 0 50%;display:flex;align-items:center;"><span style="font-size:9.5px;font-style:italic;opacity:0.6;">Constantes non renseignées</span></div>')
     + '<div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding-right:14px;">'
     + '<span style="width:38px;height:38px;border-radius:50%;background:'+badgeColor+';color:#fff;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="prescriptions à réaliser">'+badgeText+'</span>'
     + '<span style="font-size:9px;font-weight:600;line-height:1.15;text-align:center;">'+formatMotif(p.motif)+'</span>'
@@ -1115,13 +1118,15 @@ function openPlaceOverlay(btn, loc, zoneClass){
 }
 function placerCarteRiche(target, data){
   var code = (data.loc.match(/\d+/) ? data.loc.replace(/[^A-Za-zÀ-ÿ]/g,'').slice(0,1).toUpperCase()+data.loc.match(/\d+/)[0] : data.loc.slice(0,2).toUpperCase());
+  var hasVitals = !!(data.fc || data.ta || data.spo2 || data.temp);
   var html = occCard({
     loc: data.loc, code: code, zoneClass: data.zoneClass,
-    ipp: data.ipp || '—', nom: data.nom,
+    ipp: data.ipp || '', nom: data.nom,
     age: data.age || '', sexe: data.sexe || '', dob: data.dob || '',
     temps: 'à l\'instant', presc: 0,
-    fc: data.fc || '--', ta: data.ta || '--', spo2: data.spo2 || '--', temp: data.temp || '--',
-    hemocue: '--', dextro: '--',
+    fc: hasVitals ? (data.fc||'') : null, ta: hasVitals ? (data.ta||'') : null,
+    spo2: hasVitals ? (data.spo2||'') : null, temp: hasVitals ? (data.temp||'') : null,
+    hemocue: hasVitals ? '' : null, dextro: hasVitals ? '' : null,
     motif: data.motif || '—'
   });
   var wrapper = document.createElement('div');
