@@ -2465,8 +2465,16 @@ function renderOther(){
 }
 function selectDest(name, btn){
   dest=name;
-  Array.from(document.getElementById('destBtns').children).forEach(function(c){ c.classList.remove('on'); });
+  Array.from(document.getElementById('destBtns').children).forEach(function(c){
+    c.classList.remove('on');
+    c.style.outline=''; c.style.background=''; c.style.borderColor=''; c.style.color=''; c.style.fontWeight='';
+  });
   btn.classList.add('on');
+  btn.style.outline='2px solid var(--primary)';
+  btn.style.background='var(--primary-light)';
+  btn.style.borderColor='var(--primary)';
+  btn.style.color='var(--primary-dark)';
+  btn.style.fontWeight='600';
   document.getElementById('secField').style.display = name==='Secrétaire'?'flex':'none';
   document.getElementById('ideField').style.display = name==='IDE SNP'?'flex':'none';
   document.getElementById('pdsField').style.display = name==='PDS'?'flex':'none';
