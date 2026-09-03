@@ -3282,6 +3282,17 @@ function openPds(loc,name,info,btnEl,zoneClass,ipp,age,sexe,dob){
   document.getElementById('pdsPatientCard').style.display='flex';
 }
 function backPds(){
+  // Met à jour le badge de prescriptions en attente sur la carte du tableau avant de la quitter
+  if(window._currentPdsLoc && boardState[currentCentre] && boardState[currentCentre][window._currentPdsLoc]){
+    var data = boardState[currentCentre][window._currentPdsLoc];
+    data.presc = prescItems.filter(function(it){ return !it.done && !it.nonrealise; }).length;
+    var target = window._currentPdsCardBtn;
+    if(target && target.isConnected){
+      window._currentPdsCardBtn = placerCarteRiche(target, data);
+    } else {
+      saveAppState();
+    }
+  }
   document.getElementById('pdsPatientCard').style.display='none';
   document.getElementById('pdsGridCard').style.display='block';
   var pl2 = document.getElementById('pdsLayout');
