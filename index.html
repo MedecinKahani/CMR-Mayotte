@@ -915,7 +915,7 @@ function confirmSortie(nom, option){
     btn.className = 'emplacement btn '+zoneClass;
     btn.removeAttribute('id');
     btn.innerHTML = loc;
-    btn.onclick = function(){ openPlaceOverlay(btn, loc, zoneClass); };
+    btn.onclick = function(){ nouveauPatientPourEmplacement(loc); };
     libererEmplacement(loc);
   }
   dischargedPatients.push({nom:nom, motif:motif, loc:loc, zoneClass:zoneClass, centre:centre, option:option, heure:new Date().toLocaleString('fr-FR')});
@@ -942,63 +942,63 @@ function copyIppSimple(ipp, btn){
 
 var pdsTemplates = {
   Mramadoudou: '<div style="display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:6px;border-bottom:1px dashed var(--border);padding-bottom:5px;margin-bottom:5px;flex:2;min-height:0;">'
-    + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Chir 1\',\'zone-green\')">Chir 1</button>'
+    + '<button class="emplacement zone-green" onclick="nouveauPatientPourEmplacement(\'Chir 1\')">Chir 1</button>'
     + '<div></div><div></div>'
-    + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Observation 3\',\'zone-blue\')">Observation 3</button>'
-    + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Observation 2\',\'zone-blue\')">Observation 2</button>'
-    + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Chir 2\',\'zone-green\')">Chir 2</button>'
+    + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Observation 3\')">Observation 3</button>'
+    + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Observation 2\')">Observation 2</button>'
+    + '<button class="emplacement zone-green" onclick="nouveauPatientPourEmplacement(\'Chir 2\')">Chir 2</button>'
     + '<div></div>'
-    + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Lit bébé\',\'zone-blue\')">Lit bébé</button>'
-    + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Fauteuil\',\'zone-blue\')">Fauteuil</button>'
-    + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Observation 1\',\'zone-blue\')">Observation 1</button>'
+    + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Lit bébé\')">Lit bébé</button>'
+    + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Fauteuil\')">Fauteuil</button>'
+    + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Observation 1\')">Observation 1</button>'
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:6px;flex:1;min-height:0;">'
-    + '<button class="emplacement zone-red" onclick="openPlaceOverlay(this,\'Déchoc 2\',\'zone-red\')">Déchoc 2</button>'
-    + '<button class="emplacement zone-red" onclick="openPlaceOverlay(this,\'Déchoc 1\',\'zone-red\')">Déchoc 1</button>'
+    + '<button class="emplacement zone-red" onclick="nouveauPatientPourEmplacement(\'Déchoc 2\')">Déchoc 2</button>'
+    + '<button class="emplacement zone-red" onclick="nouveauPatientPourEmplacement(\'Déchoc 1\')">Déchoc 1</button>'
     + '<button id="rMed" class="emplacement zone-gray" onclick="setRole(\'Médecin\')">Médecin<br><small>Dr Theo</small></button>'
     + '<button id="rIDE" class="emplacement zone-gray" onclick="setRole(\'IDE\')">IDE<br><small>connecté·e</small></button>'
     + '<button id="rAS" class="emplacement zone-gray" onclick="setRole(\'AS\')">Aide-soignant<br><small>connecté·e</small></button>'
     + '</div>',
   Kahani: '<div style="display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;gap:6px;flex:1;min-height:0;">'
-    + '<button class="emplacement zone-purple2" onclick="openPlaceOverlay(this,\'Lit obs\',\'zone-purple2\')">Lit obs</button>'
+    + '<button class="emplacement zone-purple2" onclick="nouveauPatientPourEmplacement(\'Lit obs\')">Lit obs</button>'
     + '<button id="rIDE" class="emplacement zone-gray" onclick="setRole(\'IDE\')">IDE<br><small>connecté·e</small></button>'
     + '<button id="rMed" class="emplacement zone-gray" onclick="setRole(\'Médecin\')">Médecin<br><small>connecté·e</small></button>'
     + '<button id="rAS" class="emplacement zone-gray" onclick="setRole(\'AS\')">Aide-soignant<br><small>connecté·e</small></button>'
-    + '<button class="emplacement zone-purple2" onclick="openPlaceOverlay(this,\'Fauteuil obs\',\'zone-purple2\')">Fauteuil obs</button>'
-    + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Lit 2\',\'zone-blue\')">Lit 2</button>'
-    + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Fauteuil 1\',\'zone-green\')">Fauteuil 1</button>'
-    + '<button class="emplacement zone-red" onclick="openPlaceOverlay(this,\'Brancard 1\',\'zone-red\')">Brancard 1</button>'
-    + '<button class="emplacement zone-purple2" onclick="openPlaceOverlay(this,\'Lit bébé obs\',\'zone-purple2\')">Lit bébé obs</button>'
-    + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Fauteuil 2\',\'zone-green\')">Fauteuil 2</button>'
-    + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Lit 1\',\'zone-blue\')">Lit 1</button>'
-    + '<button class="emplacement zone-red" onclick="openPlaceOverlay(this,\'Brancard 2\',\'zone-red\')">Brancard 2</button>'
+    + '<button class="emplacement zone-purple2" onclick="nouveauPatientPourEmplacement(\'Fauteuil obs\')">Fauteuil obs</button>'
+    + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Lit 2\')">Lit 2</button>'
+    + '<button class="emplacement zone-green" onclick="nouveauPatientPourEmplacement(\'Fauteuil 1\')">Fauteuil 1</button>'
+    + '<button class="emplacement zone-red" onclick="nouveauPatientPourEmplacement(\'Brancard 1\')">Brancard 1</button>'
+    + '<button class="emplacement zone-purple2" onclick="nouveauPatientPourEmplacement(\'Lit bébé obs\')">Lit bébé obs</button>'
+    + '<button class="emplacement zone-green" onclick="nouveauPatientPourEmplacement(\'Fauteuil 2\')">Fauteuil 2</button>'
+    + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Lit 1\')">Lit 1</button>'
+    + '<button class="emplacement zone-red" onclick="nouveauPatientPourEmplacement(\'Brancard 2\')">Brancard 2</button>'
     + '</div>'
 };
 pdsTemplates['Jacaranda'] = '<div style="display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;gap:6px;flex:1;min-height:0;">'
-  + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Pansement 1\',\'zone-blue\')">Pansement 1</button>'
-  + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Pansement 2\',\'zone-blue\')">Pansement 2</button>'
+  + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Pansement 1\')">Pansement 1</button>'
+  + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Pansement 2\')">Pansement 2</button>'
   + '<div></div><div></div>'
-  + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Pansement 3\',\'zone-blue\')">Pansement 3</button>'
+  + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Pansement 3\')">Pansement 3</button>'
   + '<div></div><div></div><div></div>'
   + '<button class="emplacement zone-gray" id="rIDE" onclick="setRole(\'IDE\')">IDE<br><small>connecté·e</small></button>'
-  + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Dextro\',\'zone-green\')">Dextro</button>'
+  + '<button class="emplacement zone-green" onclick="nouveauPatientPourEmplacement(\'Dextro\')">Dextro</button>'
   + '<div></div><div></div>'
   + '<button class="emplacement zone-gray" id="rMed" onclick="setRole(\'Médecin\')">Médecin<br><small>connecté·e</small></button>'
-  + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Prélèvement\',\'zone-green\')">Prélèvement</button>'
-  + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Aérosol 1\',\'zone-green\')">Aérosol 1</button>'
-  + '<button class="emplacement zone-green" onclick="openPlaceOverlay(this,\'Aérosol 2\',\'zone-green\')">Aérosol 2</button>'
+  + '<button class="emplacement zone-green" onclick="nouveauPatientPourEmplacement(\'Prélèvement\')">Prélèvement</button>'
+  + '<button class="emplacement zone-green" onclick="nouveauPatientPourEmplacement(\'Aérosol 1\')">Aérosol 1</button>'
+  + '<button class="emplacement zone-green" onclick="nouveauPatientPourEmplacement(\'Aérosol 2\')">Aérosol 2</button>'
   + '</div>';
 pdsTemplates['Petite-Terre'] = '<div style="display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:6px;flex:1;min-height:0;">'
-  + '<button class="emplacement zone-blue" style="grid-column:1;grid-row:1;" onclick="openPlaceOverlay(this,\'Box 2\',\'zone-blue\')">Box 2</button>'
-  + '<button class="emplacement zone-blue" style="grid-column:2;grid-row:1;" onclick="openPlaceOverlay(this,\'Box 1\',\'zone-blue\')">Box 1</button>'
-  + '<button class="emplacement zone-red" style="grid-column:4;grid-row:1;" onclick="openPlaceOverlay(this,\'Déchoc 2\',\'zone-red\')">Déchoc 2</button>'
-  + '<button class="emplacement zone-blue" style="grid-column:1;grid-row:2;" onclick="openPlaceOverlay(this,\'Box 3\',\'zone-blue\')">Box 3</button>'
-  + '<button class="emplacement zone-red" style="grid-column:4;grid-row:2;" onclick="openPlaceOverlay(this,\'Déchoc 1\',\'zone-red\')">Déchoc 1</button>'
-  + '<button class="emplacement zone-blue" style="grid-column:1;grid-row:3;" onclick="openPlaceOverlay(this,\'Box chir\',\'zone-blue\')">Box chir</button>'
-  + '<button class="emplacement zone-green" style="grid-column:3;grid-row:3;" onclick="openPlaceOverlay(this,\'Fauteuil rose\',\'zone-green\')">Fauteuil rose</button>'
-  + '<button class="emplacement zone-green" style="grid-column:4;grid-row:3;" onclick="openPlaceOverlay(this,\'Fauteuil bleue\',\'zone-green\')">Fauteuil bleue</button>'
+  + '<button class="emplacement zone-blue" style="grid-column:1;grid-row:1;" onclick="nouveauPatientPourEmplacement(\'Box 2\')">Box 2</button>'
+  + '<button class="emplacement zone-blue" style="grid-column:2;grid-row:1;" onclick="nouveauPatientPourEmplacement(\'Box 1\')">Box 1</button>'
+  + '<button class="emplacement zone-red" style="grid-column:4;grid-row:1;" onclick="nouveauPatientPourEmplacement(\'Déchoc 2\')">Déchoc 2</button>'
+  + '<button class="emplacement zone-blue" style="grid-column:1;grid-row:2;" onclick="nouveauPatientPourEmplacement(\'Box 3\')">Box 3</button>'
+  + '<button class="emplacement zone-red" style="grid-column:4;grid-row:2;" onclick="nouveauPatientPourEmplacement(\'Déchoc 1\')">Déchoc 1</button>'
+  + '<button class="emplacement zone-blue" style="grid-column:1;grid-row:3;" onclick="nouveauPatientPourEmplacement(\'Box chir\')">Box chir</button>'
+  + '<button class="emplacement zone-green" style="grid-column:3;grid-row:3;" onclick="nouveauPatientPourEmplacement(\'Fauteuil rose\')">Fauteuil rose</button>'
+  + '<button class="emplacement zone-green" style="grid-column:4;grid-row:3;" onclick="nouveauPatientPourEmplacement(\'Fauteuil bleue\')">Fauteuil bleue</button>'
   + '<button class="emplacement zone-gray" style="grid-column:1;grid-row:4;" id="rAS" onclick="setRole(\'AS\')">Aide-soignant<br><small>connecté·e</small></button>'
-  + '<button class="emplacement zone-blue" style="grid-column:2;grid-row:4;" onclick="openPlaceOverlay(this,\'Box iso\',\'zone-blue\')">Box iso</button>'
+  + '<button class="emplacement zone-blue" style="grid-column:2;grid-row:4;" onclick="nouveauPatientPourEmplacement(\'Box iso\')">Box iso</button>'
   + '<button class="emplacement zone-gray" style="grid-column:3;grid-row:4;" id="rIDE" onclick="setRole(\'IDE\')">IDE<br><small>connecté·e</small></button>'
   + '<button class="emplacement zone-gray" style="grid-column:4;grid-row:4;" id="rMed" onclick="setRole(\'Médecin\')">Médecin<br><small>connecté·e</small></button>'
   + '</div>';
@@ -1008,13 +1008,13 @@ pdsTemplates['Dzoumogné'] = '<div style="display:grid;grid-template-columns:rep
   + '<div style="grid-column:5;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-muted);text-align:center;">Personnel</div>'
   + '</div>'
   + '<div style="display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:6px;flex:1;min-height:0;">'
-  + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Lit 1\',\'zone-blue\')">Lit 1</button>'
-  + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Lit 2\',\'zone-blue\')">Lit 2</button>'
-  + '<button class="emplacement zone-red" onclick="openPlaceOverlay(this,\'Déchoc 1\',\'zone-red\')">Déchoc 1</button>'
-  + '<button class="emplacement zone-red" onclick="openPlaceOverlay(this,\'Déchoc 2\',\'zone-red\')">Déchoc 2</button>'
+  + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Lit 1\')">Lit 1</button>'
+  + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Lit 2\')">Lit 2</button>'
+  + '<button class="emplacement zone-red" onclick="nouveauPatientPourEmplacement(\'Déchoc 1\')">Déchoc 1</button>'
+  + '<button class="emplacement zone-red" onclick="nouveauPatientPourEmplacement(\'Déchoc 2\')">Déchoc 2</button>'
   + '<button id="rAS" class="emplacement zone-gray" onclick="setRole(\'AS\')">Aide-soignant<br><small>connecté·e</small></button>'
-  + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Lit 3\',\'zone-blue\')">Lit 3</button>'
-  + '<button class="emplacement zone-blue" onclick="openPlaceOverlay(this,\'Lit 4\',\'zone-blue\')">Lit 4</button>'
+  + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Lit 3\')">Lit 3</button>'
+  + '<button class="emplacement zone-blue" onclick="nouveauPatientPourEmplacement(\'Lit 4\')">Lit 4</button>'
   + '<div></div><div></div>'
   + '<button id="rIDE" class="emplacement zone-gray" onclick="setRole(\'IDE\')">IDE<br><small>connecté·e</small></button>'
   + '<div></div><div></div><div></div><div></div>'
@@ -1131,6 +1131,10 @@ function placeQueuePatientOn(queueIndex, btnIndex){
   pdsWaitingQueue.splice(queueIndex, 1);
   renderPdsQueue();
   closePrelOverlay();
+}
+function nouveauPatientPourEmplacement(loc){
+  window._presetPdsDest = loc;
+  showScreen('as-pds');
 }
 function openPlaceOverlay(btn, loc, zoneClass){
   window._placeTargetBtn = btn;
@@ -1646,15 +1650,24 @@ var pdsAsDestConfig = {
 function renderPdsAsDest(){
   var box = document.getElementById('pdsAsDestButtons');
   if(!box) return;
-  var opts = pdsAsDestConfig[currentCentre] || ['Salle d\'attente (extérieur)'];
+  var opts = (pdsAsDestConfig[currentCentre] || ['Salle d\'attente (extérieur)']).slice();
+  var preset = window._presetPdsDest;
+  if(preset && opts.indexOf(preset)===-1){ opts.push(preset); }
   box.innerHTML='';
+  var presetBtn = null;
   opts.forEach(function(o){
     var b = document.createElement('button');
     b.textContent = o;
     b.style.cssText = 'height:44px;font-size:12px;font-weight:600;white-space:normal;line-height:1.2;';
     b.onclick = function(){ selectAsDest(b); };
     box.appendChild(b);
+    if(preset && o===preset){ presetBtn = b; }
   });
+  if(presetBtn){
+    selectAsDest(presetBtn, true);
+    window._orientationManuallySet = true;
+  }
+  window._presetPdsDest = null;
 }
 function selectAsDest(btn, isAuto){
   btn.parentElement.querySelectorAll('button').forEach(function(b){ b.style.outline=''; b.style.background=''; });
@@ -3198,7 +3211,7 @@ function confirmChangeLocation(i){
   oldBtn.className = 'emplacement btn '+oldZone;
   oldBtn.removeAttribute('id');
   oldBtn.innerHTML = oldLoc;
-  oldBtn.onclick = function(){ openPlaceOverlay(oldBtn, oldLoc, oldZone); };
+  oldBtn.onclick = function(){ nouveauPatientPourEmplacement(oldLoc); };
   libererEmplacement(oldLoc);
 
   // occupe le nouvel emplacement avec la carte complète
