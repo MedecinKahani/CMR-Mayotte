@@ -2343,9 +2343,13 @@ function secCloturer(){
 }
 renderSecListe();
 function cloturerMedecinConsultation(){
+  if(!dest){ alert('Sélectionnez la suite de la consultation (Domicile, Secrétaire, IDE SNP...) avant de clôturer.'); return; }
+  var realIdx = patientQueue.findIndex(function(p){ return p.name===currentPatientName && p.ipp===currentIpp; });
+  if(realIdx!==-1) patientQueue.splice(realIdx, 1);
   medecinDailyCount++;
   var lbl = document.getElementById('medecinDailyCountLabel');
   if(lbl) lbl.textContent = medecinDailyCount;
+  saveAppState();
   showScreen('liste');
   renderListe();
 }
