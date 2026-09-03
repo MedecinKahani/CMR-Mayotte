@@ -915,9 +915,11 @@ function confirmSortie(nom, option){
     btn.removeAttribute('id');
     btn.innerHTML = loc;
     btn.onclick = function(){ openPlaceOverlay(btn, loc, zoneClass); };
+    libererEmplacement(loc);
   }
   dischargedPatients.push({nom:nom, motif:motif, loc:loc, zoneClass:zoneClass, centre:centre, option:option, heure:new Date().toLocaleString('fr-FR')});
   if(option==='Décès'){ incrementActe('Décès sur site', centre); }
+  saveAppState();
   backPds();
   var content = document.getElementById('prelOverlayContent');
   content.innerHTML = '<p style="font-size:13.5px;margin:0 0 14px;">Sortie enregistrée pour <strong>'+nom+'</strong> : '+option+'</p><button onclick="closePrelOverlay()" style="width:100%;">Fermer</button>';
@@ -1017,10 +1019,46 @@ pdsTemplates['Dzoumogné'] = '<div style="display:grid;grid-template-columns:rep
   + '<div></div><div></div><div></div><div></div>'
   + '<button id="rMed" class="emplacement zone-gray" onclick="setRole(\'Médecin\')">Médecin<br><small>connecté·e</small></button>'
   + '</div>';
+var boardState = {};
+function saveAppState(){
+  try{
+    localStorage.setItem('cmrBoardState', JSON.stringify(boardState));
+    localStorage.setItem('cmrPatientQueue', JSON.stringify(patientQueue));
+    localStorage.setItem('cmrPdsWaitingQueue', JSON.stringify(pdsWaitingQueue));
+    localStorage.setItem('cmrSecQueue', JSON.stringify(secQueue));
+    localStorage.setItem('cmrIdePatientQueue', JSON.stringify(idePatientQueue));
+    localStorage.setItem('cmrDischargedPatients', JSON.stringify(dischargedPatients));
+    localStorage.setItem('cmrActeCounters', JSON.stringify(acteCounters));
+  } catch(e){ console.warn('Sauvegarde locale impossible :', e); }
+}
+function loadAppState(){
+  try{
+    var bs = localStorage.getItem('cmrBoardState'); if(bs) boardState = JSON.parse(bs);
+    var pq = localStorage.getItem('cmrPatientQueue'); if(pq) patientQueue = JSON.parse(pq);
+    var wq = localStorage.getItem('cmrPdsWaitingQueue'); if(wq) pdsWaitingQueue = JSON.parse(wq);
+    var sq = localStorage.getItem('cmrSecQueue'); if(sq) secQueue = JSON.parse(sq);
+    var iq = localStorage.getItem('cmrIdePatientQueue'); if(iq) idePatientQueue = JSON.parse(iq);
+    var dp = localStorage.getItem('cmrDischargedPatients'); if(dp) dischargedPatients = JSON.parse(dp);
+    var ac = localStorage.getItem('cmrActeCounters'); if(ac) acteCounters = JSON.parse(ac);
+  } catch(e){ console.warn('Lecture de la sauvegarde locale impossible :', e); }
+}
+function applyBoardState(centre, el){
+  var state = boardState[centre];
+  if(!state) return;
+  Object.keys(state).forEach(function(locName){
+    var data = state[locName];
+    if(!data) return;
+    var target = Array.from(el.querySelectorAll('.emplacement')).find(function(b){
+      return !b.classList.contains('occ') && !b.id && b.textContent.trim()===locName;
+    });
+    if(target) placerCarteRiche(target, data, false);
+  });
+}
 function renderPdsScreen(centre){
   document.getElementById('pdsTitle').textContent = 'PDS ' + centre;
   var el = document.getElementById('pdsEmplacements');
   el.innerHTML = pdsTemplates[centre] || pdsTemplates['Mramadoudou'];
+  applyBoardState(centre, el);
   document.getElementById('pdsPatientCard').style.display='none';
   document.getElementById('pdsGridCard').style.display='block';
   var layout = document.getElementById('pdsLayout');
@@ -1116,7 +1154,7 @@ function openPlaceOverlay(btn, loc, zoneClass){
   content.innerHTML = html;
   document.getElementById('prelOverlay').style.display = 'flex';
 }
-function placerCarteRiche(target, data){
+function placerCarteRiche(target, data, persist){
   var code = (data.loc.match(/\d+/) ? data.loc.replace(/[^A-Za-zÀ-ÿ]/g,'').slice(0,1).toUpperCase()+data.loc.match(/\d+/)[0] : data.loc.slice(0,2).toUpperCase());
   var hasVitals = !!(data.fc || data.ta || data.spo2 || data.temp);
   var html = occCard({
@@ -1133,7 +1171,18 @@ function placerCarteRiche(target, data){
   wrapper.innerHTML = html;
   var newEl = wrapper.firstElementChild;
   target.replaceWith(newEl);
+  if(persist!==false){
+    boardState[currentCentre] = boardState[currentCentre] || {};
+    boardState[currentCentre][data.loc] = data;
+    saveAppState();
+  }
   return newEl;
+}
+function libererEmplacement(loc){
+  if(boardState[currentCentre]){
+    boardState[currentCentre][loc] = null;
+    saveAppState();
+  }
 }
 function markEmplacementOccupied(nom, motif){
   var btn = window._placeTargetBtn, loc = window._placeLoc, zoneClass = window._placeZone;
@@ -1166,6 +1215,7 @@ function confirmAddPdsWaiting(){
   if(!nom){ alert('Indiquez au moins le nom du patient.'); return; }
   pdsWaitingQueue.push({nom:nom, motif:motif});
   renderPdsQueue();
+  saveAppState();
   closePrelOverlay();
 }
 var actesRapportOrder = ["Dextro","Hémocue","Test optimal (palu)","BU","Test grossesse U","Tétanotop","Actim CRP","Bilan sanguin","ECBU","Coprocultures","Sonde urinaire","VVP","IV","IM","Autres vaccins","Vaccins COVID-19","SC","DRP","Oxygène","Tensiomètre","ECG","MEOPA","Lavage CAE","Pansement simple","Pansement complexe","Surveillance","Éducation","Aérosol","Gaz du sang","Décès sur site"];
@@ -1269,11 +1319,11 @@ function cancelDischarge(idx){
   }
   pdsWaitingQueue.push({nom:p.nom, motif:p.motif});
   renderPdsQueue();
+  saveAppState();
   closePrelOverlay();
   alert('Sortie annulée — l\'emplacement '+p.loc+' n\'est plus disponible, '+p.nom+' a été replacé en file d\'attente ('+p.centre+').');
 }
 renderPostesScreen(currentCentre);
-renderPdsScreen(currentCentre);
 
 function placeholderPoste(name){
   alert(name+' : page 3 identique dans son principe (liste ou formulaire d\'actes), détail encore à finaliser pour ce poste.');
@@ -1637,6 +1687,7 @@ function envoyerPatient(containerId){
       age: age!=='—' ? age : '',
       medecin: selected
     });
+    saveAppState();
 
     asDailyCount++;
     incrementActe('Tensiomètre');
@@ -1709,6 +1760,7 @@ function envoyerPatient(containerId){
     if(!placedDirectly){
       pdsWaitingQueue.push({nom: pFullName, motif: pMotif || '—'});
       renderPdsQueue();
+      saveAppState();
     }
 
     alert(placedDirectly ? 'Patient placé directement sur : '+selected : 'Emplacement "'+selected+'" indisponible ou hors plateau affiché — patient ajouté en file d\'attente.');
@@ -3146,6 +3198,7 @@ function confirmChangeLocation(i){
   oldBtn.removeAttribute('id');
   oldBtn.innerHTML = oldLoc;
   oldBtn.onclick = function(){ openPlaceOverlay(oldBtn, oldLoc, oldZone); };
+  libererEmplacement(oldLoc);
 
   // occupe le nouvel emplacement avec la carte complète
   var motif = document.getElementById('pMotifTag').textContent;
@@ -3368,6 +3421,8 @@ function renderStatsView(){
   }
 }
 renderStatsView();
+loadAppState();
+renderPdsScreen(currentCentre);
 </script>
 </body>
 </html>
