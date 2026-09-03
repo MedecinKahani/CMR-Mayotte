@@ -912,7 +912,7 @@ function confirmSortie(nom, option){
   var motif = document.getElementById('pMotifTag').textContent;
   var centre = currentCentre;
   if(btn){
-    btn.className = 'emplacement '+zoneClass;
+    btn.className = 'emplacement btn '+zoneClass;
     btn.removeAttribute('id');
     btn.innerHTML = loc;
     btn.onclick = function(){ openPlaceOverlay(btn, loc, zoneClass); };
@@ -3195,7 +3195,7 @@ function confirmChangeLocation(i){
   var newZone = Array.from(newBtn.classList).find(function(c){ return c.indexOf('zone-')===0; });
 
   // libère l'ancien emplacement
-  oldBtn.className = 'emplacement '+oldZone;
+  oldBtn.className = 'emplacement btn '+oldZone;
   oldBtn.removeAttribute('id');
   oldBtn.innerHTML = oldLoc;
   oldBtn.onclick = function(){ openPlaceOverlay(oldBtn, oldLoc, oldZone); };
